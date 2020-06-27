@@ -11,6 +11,22 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->group(['prefix' => 'auth'], function() use ($router) {
+    $router->post('register', 'AuthController@register');
+    $router->post('login', 'AuthController@login');
+});
+
+$router->group(['middleware' => 'auth'], function() use ($router) {
+    $router->group(['prefix' => 'user'], function() use ($router) {
+        $router->get('/', 'UserController@detail');
+        $router->post('/', 'UserController@edit');
+    });
+
+    $router->group(['prefix' => 'movie'], function() use($router) {
+        $router->get('/', 'MovieController@get');
+        $router->get('/{id}', 'MovieController@detail');
+        $router->post('/', 'MovieController@create');
+        $router->post('/{id}', 'MovieController@edit');
+        $router->delete('/{id}', 'MovieController@delete');
+    });
 });
